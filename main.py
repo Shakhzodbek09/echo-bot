@@ -1,20 +1,14 @@
-import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import Message
-from aiogram.enums import ParseMode
+from telegram import Update
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
+
 import os
 
-TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-bot = Bot(token=TOKEN, parse_mode=ParseMode.HTML)
-dp = Dispatcher()
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(f"Siz yubordingiz:\n{update.message.text}")
 
-@dp.message()
-async def echo_handler(message: Message):
-    await message.answer(f"Siz yubordingiz:\n<code>{message.text}</code>")
+app = ApplicationBuilder().token(BOT_TOKEN).build()
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
-async def main():
-    await dp.start_polling(bot)
-
-if name == "main":
-    asyncio.run(main())
+app.run_polling()
